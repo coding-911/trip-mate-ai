@@ -16,20 +16,28 @@ services:
 
 
   elasticsearch:
-    image: elastic/elasticsearch:8.5.0
+    image: elastic/elasticsearch:8.15.2
     container_name: tripmateai-elasticsearch
     env_file:
       - .env
     environment:
       - discovery.type=single-node
-      - xpack.security.enabled=true
-      - ELASTIC_USERNAME=${ELASTIC_USERNAME}
-      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - xpack.security.enabled=false
       - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     ports:
       - "9200:9200"
     volumes:
       - esdata:/usr/share/elasticsearch/data
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.2
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
 
 volumes:
   tripmateai-data:
