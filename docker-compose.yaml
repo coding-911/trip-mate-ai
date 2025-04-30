@@ -3,6 +3,8 @@ services:
   db:
     image: postgres:14
     container_name: tripmateai-postgres
+    env_file:
+      - .env.db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -11,8 +13,24 @@ services:
       - "5432:5432"
     volumes:
       - tripmateai-data:/var/lib/postgresql/data
+
+
+  elasticsearch:
+    image: elastic/elasticsearch:8.5.0
+    container_name: tripmateai-elasticsearch
     env_file:
-      - .env.db
+      - .env
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=true
+      - ELASTIC_USERNAME=${ELASTIC_USERNAME}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWORD}
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+    ports:
+      - "9200:9200"
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
 
 volumes:
   tripmateai-data:
+  esdata:
