@@ -3,13 +3,15 @@ from sqlalchemy.orm import Session
 from sqlalchemy import text
 from app.db.session import get_db
 from app.core.config import settings
-from app.api.v1.routers import users, auth, locations
+from app.api.v1.routers import users, auth, locations, recommendations, user_events
 
 app = FastAPI()  
 
 app.include_router(users.router)
 app.include_router(auth.router)
 app.include_router(locations.router)
+app.include_router(recommendations.router)
+app.include_router(user_events.router)
 
 @app.get("/")  
 def root():  
