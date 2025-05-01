@@ -1,0 +1,3 @@
+# 모든 파이썬 파일과 alembic 스크립트 LF로 강제
+*.py       text eol=lf
+alembic/*  text eol=lf  
