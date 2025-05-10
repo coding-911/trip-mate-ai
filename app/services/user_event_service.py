@@ -1,5 +1,6 @@
 from elasticsearch import Elasticsearch
 from app.core.config import settings
+from datetime import datetime, timezone
 
 # ES 호스트는 .env의 ELASTICSEARCH_HOSTS="http://elasticsearch:9200" 등을 사용
 es = Elasticsearch(settings.ELASTICSEARCH_HOSTS)
@@ -20,7 +21,7 @@ class UserEventService:
             "location_id": location_id,
             "action":      action,
             "value":       value,
-            "timestamp":   "now",        # ES가 자동으로 현재 시각을 할당
+            "timestamp":   datetime.now(timezone.utc).isoformat(),        # ES가 자동으로 현재 시각을 할당
         }
         return es.index(index=cls.INDEX, document=doc)
 
