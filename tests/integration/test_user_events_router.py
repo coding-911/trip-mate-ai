@@ -1,20 +1,42 @@
-# tests/integration/test_user_events_router.py
+# tests/integration/test_user_event_router.py
 import pytest
-from fastapi.testclient import TestClient
-from app.main import app
-from app.services.user_event_service import UserEventService
+from elasticsearch import Elasticsearch
+from app.services import user_event_service
+from uuid import uuid4
 
-client = TestClient(app)
-
-@pytest.fixture(autouse=True)
-def mock_log_event(monkeypatch):
-    def fake_log_event(user_id, location_id, action, value=1.0):
-        return {"result": "created"}
-    monkeypatch.setattr(UserEventService, "log_event", fake_log_event)
 
 @pytest.mark.parametrize("action", ["view", "click", "bookmark"])
-def test_user_event_endpoints(action):
-    url = f"/users/alice/{action}/loc-1234"
-    resp = client.post(url)
-    assert resp.status_code == 201
-    assert resp.json() == {"status": "logged", "action": action}
+def test_user_event_endpoint_logs_to_es(es_test_client, action):
+    user_id = f"user-{uuid4()}"
+    location_id = f"loc-{uuid4()}"
+
+    url = f"/user_event/{user_id}/{action}/{location_id}"
+    response = es_test_client.post(url)
+
+    assert response.status_code == 201
+    assert response.json() == {"status": "logged", "action": action}
+
+    # Elasticsearch 로그 확인
+    es: Elasticsearch = user_event_service.es
+    es.indices.refresh(index=user_event_service.UserEventService.INDEX)
+
+    result = es.search(
+        index=user_event_service.UserEventService.INDEX,
+        query={
+            "bool": {
+                "must": [
+                    {"match": {"user_id": user_id}},
+                    {"match": {"location_id": location_id}},
+                    {"match": {"action": action}}
+                ]
+            }
+        }
+    )
+
+    hits = result["hits"]["hits"]
+    assert len(hits) > 0
+    doc = hits[0]["_source"]
+    assert doc["user_id"] == user_id
+    assert doc["location_id"] == location_id
+    assert doc["action"] == action
+    assert "timestamp" in doc
