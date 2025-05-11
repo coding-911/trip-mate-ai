@@ -3,7 +3,7 @@ from fastapi import APIRouter, HTTPException
 from starlette.status import HTTP_201_CREATED
 from app.services.user_event_service import UserEventService
 
-router = APIRouter(prefix="/users", tags=["logs"])
+router = APIRouter(prefix="/user_event", tags=["logs"])
 
 @router.post("/{user_id}/view/{location_id}", status_code=HTTP_201_CREATED)
 def log_view(user_id: str, location_id: str):
