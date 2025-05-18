@@ -1,20 +1,34 @@
 from pydantic import BaseModel
 from typing import Optional
 from uuid import UUID
-from datetime import datetime
 
+# 태그 자체를 생성/수정할 때 사용
 class TagBase(BaseModel):
     name: str
     use_yn: Optional[str] = "Y"
     delete_yn: Optional[str] = "N"
 
+
+# 장소에 태그를 연결할 때 사용하는 요청 모델
+class TagNameRequest(BaseModel):
+    tag_name: str
+
+
+# 태그 생성 요청 (ex: 관리자 전용 API 등)
 class TagCreate(TagBase):
     pass
 
-class Tag(TagBase):
+
+# 태그 수정 요청
+class TagUpdate(BaseModel):
+    name: Optional[str] = None
+    use_yn: Optional[str] = None
+    delete_yn: Optional[str] = None
+
+
+# 태그 응답 모델
+class TagResponse(BaseModel):
     id: UUID
-    created_at: datetime
-    updated_at: datetime
-    deleted_at: Optional[datetime]
+    name: str
 
     model_config = { "from_attributes": True }
