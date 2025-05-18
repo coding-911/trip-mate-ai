@@ -19,7 +19,7 @@ services:
     image: elastic/elasticsearch:8.15.2
     container_name: tripmateai-elasticsearch
     env_file:
-      - .env
+      - .env.docker
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -32,6 +32,8 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.15.2
     container_name: kibana
+    env_file:
+      - .env.docker
     environment:
       - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}
     ports:
