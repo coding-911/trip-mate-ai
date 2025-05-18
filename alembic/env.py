@@ -10,13 +10,7 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from app.core.config import settings
 from app.db.base import Base
 # 모든 모델을 import 해야 metadata에 등록됩니다
-import app.db.models.user
-import app.db.models.tag
-import app.db.models.itinerary
-import app.db.models.itinerary_tag
-import app.db.models.itinerary_step
-import app.db.models.location
-import app.db.models.location_tag
+
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
