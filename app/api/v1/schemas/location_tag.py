@@ -11,13 +11,9 @@ class LocationTagBase(BaseModel):
     use_yn: Optional[str] = "Y"
     delete_yn: Optional[str] = "N"
 
-class LocationTagCreate(LocationTagBase):
-    pass
+class LocationTagResponse(BaseModel):
+    location_id: UUID
+    tag_id: UUID
+    tag_name: str
 
-class LocationTag(LocationTagBase):
-    id: UUID
-    created_at: datetime
-    updated_at: datetime
-    deleted_at: Optional[datetime]
-
-    model_config = { "from_attributes": True }
+    model_config = {"from_attributes": True}

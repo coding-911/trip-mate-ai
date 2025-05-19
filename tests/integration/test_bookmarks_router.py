@@ -7,7 +7,7 @@ from app.db.session import get_db
 from app.core.dependencies.auth import get_current_user
 from app.db.models.user import User
 from app.db.models.location import Location
-from app.db.models.bookmark import UserBookmark
+from app.db.models.bookmark import Bookmark
 
 
 def create_test_user(db):
@@ -61,7 +61,7 @@ def test_create_bookmark_endpoint(auth_es_client, db_session):
     assert "id" in data
 
     bm_id = UUID(data["id"])
-    bm = db_session.query(UserBookmark).filter_by(id=bm_id).first()
+    bm = db_session.query(Bookmark).filter_by(id=bm_id).first()
     assert bm is not None
     assert bm.location_id == loc.id
 
@@ -88,6 +88,6 @@ def test_delete_bookmark_endpoint(auth_es_client, db_session):
     resp = auth_es_client.delete(f"/bookmark/{bm_id}")
     assert resp.status_code == 204
 
-    bm = db_session.query(UserBookmark).get(UUID(bm_id))
+    bm = db_session.query(Bookmark).get(UUID(bm_id))
     assert bm.delete_yn == 'Y'
     assert bm.use_yn    == 'N'

@@ -3,7 +3,7 @@ from uuid import UUID, uuid4
 from sqlalchemy.orm import Session
 
 from app.services.bookmark_service import BookmarkService
-from app.db.models.bookmark import UserBookmark
+from app.db.models.bookmark import Bookmark
 from app.services.user_event_service import UserEventService
 
 class DummyEvent:
@@ -26,7 +26,7 @@ def test_add_bookmark_creates_new(db_session: Session, patch_es: DummyEvent):
     loc_id  = uuid4()
 
     bm = BookmarkService.add_bookmark(db_session, str(user_id), str(loc_id))
-    assert isinstance(bm, UserBookmark)
+    assert isinstance(bm, Bookmark)
     assert bm.user_id == user_id
     assert bm.location_id == loc_id
 

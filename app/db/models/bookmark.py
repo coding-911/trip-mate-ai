@@ -3,8 +3,8 @@ from sqlalchemy import Column, CHAR, TIMESTAMP, ForeignKey, func
 from sqlalchemy.dialects.postgresql import UUID as PGUUID
 from app.db.base import Base
 
-class UserBookmark(Base):
-    __tablename__ = "user_bookmarks"
+class Bookmark(Base):
+    __tablename__ = "bookmarks"
 
     id         = Column(PGUUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
     user_id    = Column(PGUUID(as_uuid=True), ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
