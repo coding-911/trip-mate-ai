@@ -2,6 +2,7 @@
 from fastapi import APIRouter, HTTPException
 from starlette.status import HTTP_201_CREATED
 from app.services.user_event_service import UserEventService
+import traceback
 
 router = APIRouter(prefix="/user_event", tags=["logs"])
 
@@ -11,8 +12,10 @@ def log_view(user_id: str, location_id: str):
     사용자 장소 상세 페이지 view 이벤트 기록
     """
     try:
+        print(">>> Logging view event", user_id, location_id)
         UserEventService.view(user_id, location_id)
     except Exception as e:
+        traceback.print_exc() 
         raise HTTPException(status_code=500, detail=str(e))
     return {"status": "logged", "action": "view"}
 
@@ -29,7 +32,7 @@ def log_click(user_id: str, location_id: str):
 
 @router.post("/{user_id}/bookmark/{location_id}", status_code=HTTP_201_CREATED)
 def log_bookmark(user_id: str, location_id: str):
-    """
+    """ 
     사용자 bookmark 이벤트 기록
     """
     try:

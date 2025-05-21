@@ -81,6 +81,7 @@ for user in users:
             }
         })
 
-# Bulk insert to Elasticsearch
+# Bulk insert into Elasticsearch
 bulk(es, logs)
-print(">>> 추천 모델 전처리를 위한 더미 로그 생성 완료")
+
+print("딥러닝을 위한 더미 데이터 대량 생성 완료")
