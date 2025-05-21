@@ -1,0 +1,5 @@
+# 크론탭 편집기 들어가기
+crontab -e
+
+# 추천 모델 재학습 (매일 03:00)
+0 3 * * * bash /프로젝트절대경로/scripts/batch/run_with_logs.sh retrain_location_recommendation
