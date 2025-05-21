@@ -1,3 +1,4 @@
+import traceback
 from elasticsearch import Elasticsearch
 from app.core.config import settings
 from datetime import datetime, timezone
@@ -14,16 +15,21 @@ class UserEventService:
         user_id:     str,
         location_id: str,
         action:      str,
-        value:       float = 1.0,
     ):
         doc = {
             "user_id":     user_id,
             "location_id": location_id,
             "action":      action,
-            "value":       value,
             "timestamp":   datetime.now(timezone.utc).isoformat(),        # ES가 자동으로 현재 시각을 할당
         }
-        return es.index(index=cls.INDEX, document=doc)
+        try:
+            res = es.index(index=cls.INDEX, document=doc)
+            print(">>> Elasticsearch response:", res)
+            return res
+        except Exception as e:
+            print(">>> Elasticsearch error:")
+            traceback.print_exc()
+            raise
 
     @classmethod
     def view(cls, user_id: str, location_id: str):
