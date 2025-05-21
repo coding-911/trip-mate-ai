@@ -10,6 +10,7 @@ class Settings(BaseSettings):
     ELASTIC_USERNAME: str
     ELASTIC_PASSWORD: str
     KAKAO_REST_API_KEY: str
+    GOOGLE_API_KEY: str
 
     class Config:
         env_file = (
