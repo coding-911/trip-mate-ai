@@ -3,8 +3,6 @@ services:
   db:
     image: postgres:14
     container_name: tripmateai-postgres
-    env_file:
-      - .env.db
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -13,13 +11,12 @@ services:
       - "5432:5432"
     volumes:
       - tripmateai-data:/var/lib/postgresql/data
+      - ./db/backup:/backup
 
 
   elasticsearch:
     image: elastic/elasticsearch:8.15.2
     container_name: tripmateai-elasticsearch
-    env_file:
-      - .env.docker
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
@@ -32,14 +29,32 @@ services:
   kibana:
     image: docker.elastic.co/kibana/kibana:8.15.2
     container_name: kibana
-    env_file:
-      - .env.docker
     environment:
       - ELASTICSEARCH_HOSTS=${ELASTICSEARCH_HOSTS}
     ports:
       - "5601:5601"
     depends_on:
       - elasticsearch
+
+  redis:
+    image: redis:7
+    container_name: tripmateai-redis
+    ports:
+      - "16379:6379"
+    restart: unless-stopped
+    
+  pg_backup:
+    build:
+      context: .
+      dockerfile: Dockerfile.pgbackup
+    container_name: tripmateai-pgbackup
+    depends_on:
+      - db
+    volumes:
+      - ./scripts:/scripts
+      - ./db/backup:/backup
+      - ./logs:/logs
+    restart: unless-stopped
 
 volumes:
   tripmateai-data:
