@@ -14,6 +14,7 @@ from app.db.session import get_db
 from app.services import user_event_service
 from app.core.config import settings
 
+assert settings.ENV != "local", "local 환경에서 테스트를 실행하면 안 됩니다."
 
 # ─── in-memory SQLite 설정 ────────────────────────────────────────────────────
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
@@ -120,16 +121,15 @@ def es_test_client(es_container, client) -> TestClient:
     else:
         raise RuntimeError("Elasticsearch did not start in time.")
 
-    if not new_es.indices.exists(index="user-logs"):
+    if not new_es.indices.exists(index="user-events"):
         new_es.indices.create(
-            index="user-logs",
+            index="user-events",
             body={
                 "mappings": {
                     "properties": {
                         "user_id":     {"type": "keyword"},
                         "location_id": {"type": "keyword"},
                         "action":      {"type": "keyword"},
-                        "value":       {"type": "float"},
                         "timestamp":   {"type": "date"},
                     }
                 }

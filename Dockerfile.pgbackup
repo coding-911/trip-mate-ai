@@ -1,0 +1,16 @@
+FROM postgres:14
+
+RUN apt update && apt install -y cron
+
+COPY scripts/pg_backup.sh /usr/local/bin/pg_backup.sh
+COPY scripts/pg_cleanup_old.sh /usr/local/bin/pg_cleanup_old.sh
+RUN chmod +x /usr/local/bin/pg_backup.sh /usr/local/bin/pg_cleanup_old.sh
+
+# cron 등록
+RUN echo "0 0 * * * /usr/local/bin/pg_backup.sh >> /logs/pg/backup/backup.log 2>&1" > /etc/cron.d/pg_tasks && \
+    echo '0 0 * * * /usr/local/bin/pg_backup.sh >> /logs/pg/backup/backup_$(date +\\%Y\\%m\\%d).log 2>&1' >> /etc/cron.d/pg_tasks && \
+    echo "10 0 * * * /usr/local/bin/pg_cleanup_old.sh >> /logs/pg/cleanup/cleanup.log 2>&1" >> /etc/cron.d/pg_tasks && \
+    echo '10 0 * * * /usr/local/bin/pg_cleanup_old.sh >> /logs/pg/cleanup/cleanup_$(date +\\%Y\\%m\\%d).log 2>&1' >> /etc/cron.d/pg_tasks && \
+    chmod 0644 /etc/cron.d/pg_tasks
+
+CMD ["cron", "-f"]
