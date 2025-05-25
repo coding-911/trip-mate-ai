@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 es = Elasticsearch(settings.ELASTICSEARCH_HOSTS)
 
 class UserEventService:
-    INDEX = "user-logs"
+    INDEX = "user-events"
 
     @classmethod
     def log_event(

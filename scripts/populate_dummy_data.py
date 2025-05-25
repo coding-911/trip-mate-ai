@@ -72,7 +72,7 @@ for user in users:
         timestamp = datetime.now() - timedelta(days=days_ago, seconds=seconds_offset)
 
         logs.append({
-            "_index": "user-logs",
+            "_index": "user-events",
             "_source": {
                 "user_id": str(user.id),
                 "location_id": str(loc.id),
@@ -81,7 +81,26 @@ for user in users:
             }
         })
 
-# Bulk insert into Elasticsearch
-bulk(es, logs)
+if not es.indices.exists(index="user-events"):
+    es.indices.create(
+        index="user-events",
+        body={
+            "mappings": {
+                "properties": {
+                    "user_id":     {"type": "keyword"},
+                    "location_id": {"type": "keyword"},
+                    "action":      {"type": "keyword"},
+                    "timestamp":   {"type": "date"}  # ISO 8601 포맷이면 자동 인식되지만 명시 권장
+                }
+            }
+        }
+    )
 
-print("딥러닝을 위한 더미 데이터 대량 생성 완료")
+
+# Bulk insert into Elasticsearch
+response = bulk(es, logs)
+
+success, failed = response
+print(f"성공: {success}, 실패: {len(logs) - success}")
+
+print("딥러닝을 위한 더미 데이터 대량 생성 작업 완료")
