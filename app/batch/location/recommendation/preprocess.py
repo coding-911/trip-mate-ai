@@ -6,7 +6,7 @@ from app.db.session import SessionLocal
 from app.db.models.location import Location
 from app.core.config import settings
 
-def fetch_logs_from_elasticsearch(index: str = "user-logs") -> pd.DataFrame:
+def fetch_logs_from_elasticsearch(index: str = "user-events") -> pd.DataFrame:
     print("[1/3] Elasticsearch에서 로그 수집 시작")
 
     es = Elasticsearch([settings.ELASTICSEARCH_HOSTS])
@@ -82,6 +82,9 @@ def preprocess():
     logs_df = fetch_logs_from_elasticsearch()
     interactions, user_idx, item_idx = convert_to_interaction_matrix(logs_df)
     item_features = load_item_features(item_idx)
-
+    print(">>> interactions shape:", interactions.shape)
+    print(">>> interactions nnz (non-zero entries):", interactions.nnz)
+    print(">>> item_features shape:", item_features.shape)
     print("[DONE] 전처리 완료")
+
     return interactions, item_features, user_idx, item_idx
