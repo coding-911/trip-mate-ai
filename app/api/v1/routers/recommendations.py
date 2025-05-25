@@ -1,26 +1,28 @@
-from fastapi import APIRouter, Depends
+# app/api/v1/routers/recommendation.py
+
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from pydantic import BaseModel
-from typing import List
-
-from app.services.recommendation_service import RecommendationService
 from app.db.session import get_db
-from app.api.v1.schemas.location import LocationResponse
+from app.services.recommendation_service import RecommendationService
+from app.api.v1.schemas.recommendation import RecommendationRequest, RecommendationResponse
 
-router = APIRouter(prefix="/recommendations", tags=["recommendations"])
+router = APIRouter(prefix="/recommend", tags=["recommendation"])
 
-class RecommendMVPRequest(BaseModel):
-    tags: List[str]
-    days: int
-    per_day_count: int = 5
-
-    model_config = {"from_attributes": True}
-
-@router.post("/mvp", response_model=List[List[LocationResponse]])
-def recommend_mvp(req: RecommendMVPRequest, db: Session = Depends(get_db)):
-    return RecommendationService.recommend_mvp(
-        tags=req.tags,
-        days=req.days,
-        per_day_count=req.per_day_count,
-        db=db
-    )
+@router.post("", response_model=RecommendationResponse)
+def recommend(
+    request: RecommendationRequest,
+    db: Session = Depends(get_db)
+):
+    try:
+        schedule = RecommendationService.recommend_with_cache(
+            method=request.method or "auto",
+            user_id=request.user_id,
+            tags=request.tags,
+            days=request.days,
+            per_day_count=request.per_day_count,
+            db=db
+        )
+        return {"schedule": schedule}
+    except Exception as e:
+        print(">>> Recommend API Error:", e) 
+        raise HTTPException(status_code=500, detail=str(e))
