@@ -6,8 +6,6 @@ from .auth import *
 from .bookmark import *
 
 from .itinerary_step import *
-from .itinerary_tag import *
-from .itinerary import *
 
 from .location_tag import *
 from .location import *

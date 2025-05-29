@@ -14,8 +14,6 @@ from app.db.session import get_db
 from app.services import user_event_service
 from app.core.config import settings
 
-assert settings.ENV != "local", "local 환경에서 테스트를 실행하면 안 됩니다."
-
 # ─── in-memory SQLite 설정 ────────────────────────────────────────────────────
 SQLALCHEMY_DATABASE_URL = "sqlite:///:memory:"
 _engine = create_engine(
@@ -137,3 +135,4 @@ def es_test_client(es_container, client) -> TestClient:
         )
 
     return client
+
