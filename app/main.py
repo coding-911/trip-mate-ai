@@ -4,6 +4,8 @@ from sqlalchemy import text
 from app.db.session import get_db
 from app.core.config import settings
 from app.api.v1.routers import users, auth, locations, recommendations, user_events, bookmarks
+from app.api.v1.routers import itinerary
+from app.api.v1.routers import itinerary_step
 
 app = FastAPI()  
 
@@ -14,6 +16,8 @@ app.include_router(locations.router)
 app.include_router(recommendations.router)
 app.include_router(users.router)
 app.include_router(user_events.router)
+app.include_router(itinerary.router)
+app.include_router(itinerary_step.router)
 
 
 @app.get("/")  
