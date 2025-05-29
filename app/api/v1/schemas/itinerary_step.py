@@ -24,3 +24,26 @@ class ItineraryStep(ItineraryStepBase):
     deleted_at: Optional[datetime]
 
     model_config = { "from_attributes": True }
+
+class ItineraryStepCreateRequest(BaseModel):
+    user_id: str
+    location_id: str
+    date: date
+    start_time: datetime
+    end_time: datetime
+    itinerary_id: Optional[str] = None
+
+class ItineraryStepUpdateRequest(BaseModel):
+    date: Optional[date] = None
+    start_time: Optional[datetime] = None
+    end_time: Optional[datetime] = None
+    location_id: Optional[str] = None
+
+class ItineraryStepResponse(BaseModel):
+    itinerary_id: UUID
+    step_id: UUID
+    step_order: int
+    location_id: UUID
+    date: date
+    start_time: datetime
+    end_time: datetime
